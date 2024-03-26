@@ -1,0 +1,6 @@
+@Game_Cost_Ratings_backend_HostAddress = http://localhost:5197
+
+GET {{Game_Cost_Ratings_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
