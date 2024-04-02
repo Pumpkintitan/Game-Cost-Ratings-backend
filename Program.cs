@@ -1,4 +1,15 @@
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                      });
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -16,29 +27,31 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/prompt/{id}", (string id) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var prompt = new Prompt(id, "An indie mashup of the bike racing and educational game genres, where you play as an invisible farmer attempting to save the world from a famous president.");
+    return prompt;
 })
-.WithName("GetWeatherForecast")
+.WithName("GetPrompt")
 .WithOpenApi();
+
+app.MapGet("/result/{id}", (string id) =>
+{
+    var result = new Result(id, "An indie mashup of the bike racing and educational game genres, where you play as an invisible farmer attempting to save the world from a famous president.", [59.99, 40, 0, 43.80]);
+    return result;
+})
+.WithName("GetResult")
+.WithOpenApi();
+
+app.MapPost("/postPrice", (DataPoint price) =>
+{
+    var result = price;
+    return result;
+})
+.WithName("PostPrice")
+.WithOpenApi();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

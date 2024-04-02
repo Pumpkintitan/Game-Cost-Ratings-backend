@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj": {}
+    "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj": {}
   },
   "projects": {
-    "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj": {
+    "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj",
+        "projectUniqueName": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj",
         "projectName": "Game-Cost-Ratings-backend",
-        "projectPath": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj",
+        "projectPath": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend.csproj",
         "packagesPath": "/Users/enricoblackwell/.nuget/packages/",
-        "outputPath": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/Game-Cost-Ratings-backend/obj/",
+        "outputPath": "/Users/enricoblackwell/Desktop/Game-Cost-Ratings-backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/enricoblackwell/.nuget/NuGet/NuGet.Config"
@@ -46,6 +46,16 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[8.0.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

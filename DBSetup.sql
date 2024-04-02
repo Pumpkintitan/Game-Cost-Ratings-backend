@@ -1,0 +1,11 @@
+CREATE TABLE game (
+  id VARCHAR(20) NOT NULL,
+  gameprompt VARCHAR(200) NOT NULL,
+  PRIMARY KEY (id)
+);
+CREATE TABLE rating (
+  id INT(20) NOT NULL AUTO_INCREMENT,
+  gamerating DOUBLE(10) unsigned NOT NULL,
+  gameid VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id) FOREIGN KEY (gameid) REFERENCES game(id)
+);
