@@ -1,4 +1,8 @@
+using Npgsql;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var connectionString = ""; // Not for GitHub
+await using var dataSource = NpgsqlDataSource.Create(connectionString);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -27,26 +32,75 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/prompt/{id}", (string id) =>
+app.MapGet("/prompt/{id}", async (string id) =>
 {
-    var prompt = new Prompt(id, "An indie mashup of the bike racing and educational game genres, where you play as an invisible farmer attempting to save the world from a famous president.");
-    return prompt;
+    await using var connection = await dataSource.OpenConnectionAsync();
+    await using var cmd = new NpgsqlCommand("SELECT gameprompt FROM game WHERE id = $1", connection)
+    {
+        Parameters =
+    {
+            new() { Value = Int32.Parse(id) }
+    }
+    };
+    await using var reader = await cmd.ExecuteReaderAsync();
+    {
+        while (await reader.ReadAsync())
+        {
+            var prompt = new Prompt(id, reader.GetString(0));
+            return prompt;
+        }
+
+    }
+
+
+    return new Prompt("0", "error");
 })
 .WithName("GetPrompt")
 .WithOpenApi();
 
-app.MapGet("/result/{id}", (string id) =>
+app.MapGet("/result/{id}", async (string id) =>
 {
-    var result = new Result(id, "An indie mashup of the bike racing and educational game genres, where you play as an invisible farmer attempting to save the world from a famous president.", [59.99, 40, 0, 43.80]);
-    return result;
+    await using var connection = await dataSource.OpenConnectionAsync();
+    await using var cmd = new NpgsqlCommand("SELECT gamerating, gameprompt from rating JOIN game ON gameid = game.id WHERE gameid = $1;", connection)
+    {
+        Parameters =
+    {
+            new() { Value = Int32.Parse(id) }
+    }
+    };
+    await using var reader = await cmd.ExecuteReaderAsync();
+    {
+
+        var indexOfColumn1 = reader.GetOrdinal("gamerating");
+        List<double> dataList = new List<double>();
+        string title = "";
+        while (await reader.ReadAsync())
+        {
+            dataList.Add(reader.GetDouble(indexOfColumn1));
+            title = reader.GetString(1);
+        }
+        var result = new Result(id, title, dataList);
+        //new Result(id, reader.GetString(0));
+        return result;
+
+    }
 })
 .WithName("GetResult")
 .WithOpenApi();
 
-app.MapPost("/postPrice", (DataPoint price) =>
+app.MapPost("/postPrice", async (DataPoint price) =>
 {
-    var result = price;
-    return result;
+    await using var connection = await dataSource.OpenConnectionAsync();
+    await using var cmd = new NpgsqlCommand("INSERT INTO rating (gamerating, gameid) VALUES ($1, $2);", connection)
+    {
+        Parameters =
+    {
+            new() { Value = price.Price },
+            new() { Value = Int32.Parse(price.Id) }
+    }
+    };
+    await cmd.ExecuteNonQueryAsync();
+    return price;
 })
 .WithName("PostPrice")
 .WithOpenApi();
