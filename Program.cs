@@ -1,7 +1,14 @@
 using Npgsql;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-var connectionString = ""; // Not for GitHub
+
+// Get connection string from environment variables
+var host = Environment.GetEnvironmentVariable("PGHOST");
+var username = Environment.GetEnvironmentVariable("PGUSER");
+var password = Environment.GetEnvironmentVariable("PGPASSWORD");
+var database = Environment.GetEnvironmentVariable("PGDATABASE");
+
+var connectionString = $"Host={host};Username={username};Password={password};Database={database}";
 await using var dataSource = NpgsqlDataSource.Create(connectionString);
 
 var builder = WebApplication.CreateBuilder(args);
