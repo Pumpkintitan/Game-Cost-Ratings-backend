@@ -8,21 +8,25 @@ fastify.register(require('@fastify/postgres'), {
 fastify.register(require('@fastify/cors'), { origin: '*' });
 
 fastify.get('/prompt/:id', (req, reply) => {
+  console.log(`GET /prompt/${req.params.id}`);
   fastify.pg.query(
     'SELECT gameprompt FROM game WHERE id = $1',
     [req.params.id],
     function onResult(err, result) {
+      console.log(`Sent ${err || result}`);
       reply.send(err || result);
     }
   );
 });
 
 fastify.get('/result/:id', (req, reply) => {
+  console.log(`GET /result/${req.params.id}`);
   fastify.pg.query(
     'SELECT gamerating, gameprompt from rating JOIN game ON gameid = game.id WHERE gameid = $1',
     [req.params.id],
     function onResult(err, result) {
       if (err) {
+        console.log(`Error: ${err}`);
         return reply.send(err);
       }
 
@@ -34,6 +38,8 @@ fastify.get('/result/:id', (req, reply) => {
         title = row.gameprompt;
       }
 
+      console.log(`Sent ${dataList}`);
+
       reply.send({
         id: req.params.id,
         title: title,
@@ -44,6 +50,7 @@ fastify.get('/result/:id', (req, reply) => {
 });
 
 fastify.post('/postPrice', (req, reply) => {
+  console.log(`POST /postPrice`);
   const price = req.body;
 
   fastify.pg.query(
@@ -51,8 +58,10 @@ fastify.post('/postPrice', (req, reply) => {
     [price.price, parseInt(price.id)],
     function onResult(err, result) {
       if (err) {
+        console.log(`Error: ${err}`);
         return reply.send(err);
       }
+      console.log(`Sent ${price}`);
       reply.send(price);
     }
   );
