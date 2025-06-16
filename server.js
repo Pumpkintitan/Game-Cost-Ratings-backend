@@ -1,8 +1,11 @@
-const fastify = require('fastify')();
+const fastify = require('fastify')({
+  logger: true,
+});
 const cors = require('@fastify/cors');
+const postgres = require('@fastify/postgres');
 require('dotenv').config();
 
-fastify.register(require('@fastify/postgres'), {
+fastify.register(postgres, {
   connectionString: process.env.DATABASE_URL,
 });
 
@@ -13,25 +16,25 @@ fastify.register(cors, {
 });
 
 fastify.get('/prompt/:id', (req, reply) => {
-  console.log(`GET /prompt/${req.params.id}`);
+  fastify.log.info(`GET /prompt/${req.params.id}`);
   fastify.pg.query(
     'SELECT gameprompt FROM game WHERE id = $1',
     [req.params.id],
     function onResult(err, result) {
-      console.log(`Sent ${err || result}`);
+      fastify.log.info(`Sent ${err || result}`);
       reply.send(err || result);
     }
   );
 });
 
 fastify.get('/result/:id', (req, reply) => {
-  console.log(`GET /result/${req.params.id}`);
+  fastify.log.info(`GET /result/${req.params.id}`);
   fastify.pg.query(
     'SELECT gamerating, gameprompt from rating JOIN game ON gameid = game.id WHERE gameid = $1',
     [req.params.id],
     function onResult(err, result) {
       if (err) {
-        console.log(`Error: ${err}`);
+        fastify.log.error(`Error: ${err}`);
         return reply.send(err);
       }
 
@@ -43,7 +46,7 @@ fastify.get('/result/:id', (req, reply) => {
         title = row.gameprompt;
       }
 
-      console.log(`Sent ${dataList}`);
+      fastify.log.info(`Sent ${dataList}`);
 
       reply.send({
         id: req.params.id,
@@ -55,7 +58,7 @@ fastify.get('/result/:id', (req, reply) => {
 });
 
 fastify.post('/postPrice', (req, reply) => {
-  console.log(`POST /postPrice`);
+  fastify.log.info(`POST /postPrice`);
   const price = req.body;
 
   fastify.pg.query(
@@ -63,19 +66,19 @@ fastify.post('/postPrice', (req, reply) => {
     [price.price, parseInt(price.id)],
     function onResult(err, result) {
       if (err) {
-        console.log(`Error: ${err}`);
+        fastify.log.error(`Error: ${err}`);
         return reply.send(err);
       }
-      console.log(`Sent ${price}`);
+      fastify.log.info(`Sent ${price}`);
       reply.send(price);
     }
   );
 });
 
 fastify.listen(
-  { host: '::', port: Number(process.env.PORT) || 3000 },
+  { host: '0.0.0.0', port: Number(process.env.PORT) || 3000 },
   (err) => {
     if (err) throw err;
-    console.log(`server listening on ${fastify.server.address().port}`);
+    fastify.log.info(`server listening on ${fastify.server.address().port}`);
   }
 );
