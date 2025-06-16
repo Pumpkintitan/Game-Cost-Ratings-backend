@@ -72,7 +72,10 @@ fastify.post('/postPrice', (req, reply) => {
   );
 });
 
-fastify.listen({ port: process.env.PORT, host: '::' }, (err) => {
-  if (err) throw err;
-  console.log(`server listening on ${fastify.server.address().port}`);
-});
+fastify.listen(
+  { host: '::', port: Number(process.env.PORT) || 3000 },
+  (err) => {
+    if (err) throw err;
+    console.log(`server listening on ${fastify.server.address().port}`);
+  }
+);
