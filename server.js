@@ -1,11 +1,16 @@
 const fastify = require('fastify')();
+const cors = require('@fastify/cors');
 require('dotenv').config();
 
 fastify.register(require('@fastify/postgres'), {
   connectionString: process.env.DATABASE_URL,
 });
 
-fastify.register(require('@fastify/cors'), { origin: '*' });
+fastify.register(cors, {
+  origin: ['http://localhost:5173', process.env.FRONTEND_URL],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+});
 
 fastify.get('/prompt/:id', (req, reply) => {
   console.log(`GET /prompt/${req.params.id}`);
