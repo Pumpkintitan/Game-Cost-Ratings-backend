@@ -10,7 +10,7 @@ fastify.register(postgres, {
 });
 
 fastify.register(cors, {
-  origin: ['http://localhost:5173', process.env.FRONTEND_URL],
+  origin: [process.env.FRONTEND_URL],
   methods: ['GET', 'POST'],
 });
 
